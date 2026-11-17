@@ -1,0 +1,17 @@
+scenario_id: E6
+name: Roll-gain sensitivity on the square mission
+world: worlds/square.wbt
+sim_duration_s: 50.0
+target_precision_m: 0.2
+seeds: [0]
+# Same mission as E2; the roll proportional gain is swept for both methods.
+# 50 is the value used by the Webots sample controller.
+sweep:
+  param: roll_kp
+  values: [15, 20, 25, 30, 35, 40, 50]
+waypoints:
+  - [0.0, 0.0, 1.5, 0.0]
+  - [2.0, 0.0, 1.5, 0.0]
+  - [2.0, 2.0, 1.5, 1.5708]
+  - [0.0, 2.0, 1.5, 3.1416]
+  - [0.0, 0.0, 1.5, -1.5708]

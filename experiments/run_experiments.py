@@ -81,18 +81,38 @@ def main() -> None:
     ap.add_argument("--no-summary", action="store_true")
     args = ap.parse_args()
 
-    records = []
     for sc in load_scenarios(args.only):
         if sc.get("dev") and not args.only:
             continue  # development scenarios only run when named explicitly
-        for seed in sc.get("seeds", [0]):
-            for method in args.methods:
-                out_rel = run_dir(sc["scenario_id"], method, seed)
-                run_single(sc, method, seed, out_rel)
-                records.append((sc["scenario_id"], method, seed, out_rel))
+        for variant, tag in sweep_variants(sc):
+            for seed in variant.get("seeds", [0]):
+                for method in args.methods:
+                    run_single(variant, method, seed, run_dir(sc["scenario_id"], method, seed, tag))
     if not args.no_summary:
-        from analysis.metrics import summarise_runs
-        summarise_runs([r[3] for r in records], os.path.join(REPO, "results", "summary.csv"))
+        write_summary()
+
+
+def sweep_variants(sc: Dict[str, Any]):
+    """Yield (scenario, tag) pairs: one per sweep value, or the scenario itself."""
+    sweep = sc.get("sweep")
+    if not sweep:
+        yield sc, ""
+        return
+    for value in sweep["values"]:
+        variant = copy.deepcopy(sc)
+        variant.pop("sweep")
+        override = {sweep["param"]: value}
+        variant["gains"] = {"baseline": dict(override), "improved": dict(override)}
+        variant["tag"] = f"{sweep['param']}={value}"
+        yield variant, f"{sweep['param']}{value}"
+
+
+def write_summary() -> None:
+    """Rebuild results/summary.csv from every run directory under results/E*/."""
+    from analysis.metrics import summarise_runs
+    dirs = sorted(os.path.dirname(p) for p in
+                  glob.glob(os.path.join(REPO, "results", "E*", "*", "*", "telemetry.csv")))
+    summarise_runs(dirs, os.path.join(REPO, "results", "summary.csv"))
 
 
 if __name__ == "__main__":

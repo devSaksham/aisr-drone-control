@@ -1,0 +1,18 @@
+scenario_id: E4
+name: Square mission under crosswind and gusts
+world: worlds/wind.wbt
+sim_duration_s: 60.0
+target_precision_m: 0.2
+seeds: [0]
+# 0.3 N constant crosswind along +y (about 6 % of the 4.9 N weight) plus a
+# 0.15 N sinusoidal gust with a 4 s period, switched on at t = 8 s
+wind_force: [0.0, 0.3, 0.0]
+gust_amplitude: 0.15
+gust_period_s: 4.0
+wind_start_s: 8.0
+waypoints:
+  - [0.0, 0.0, 1.5, 0.0]
+  - [2.0, 0.0, 1.5, 0.0]
+  - [2.0, 2.0, 1.5, 1.5708]
+  - [0.0, 2.0, 1.5, 3.1416]
+  - [0.0, 0.0, 1.5, -1.5708]

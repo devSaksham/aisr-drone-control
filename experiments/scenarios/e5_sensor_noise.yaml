@@ -1,0 +1,15 @@
+scenario_id: E5
+name: Square mission with GPS and IMU noise (10 seeds)
+world: worlds/square.wbt
+sim_duration_s: 50.0
+target_precision_m: 0.2
+seeds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+# Gaussian noise: GPS 5 cm per axis, IMU angles 0.005 rad, gyro 0.005 rad/s
+gps_noise_std: 0.05
+imu_noise_std: 0.005
+waypoints:
+  - [0.0, 0.0, 1.5, 0.0]
+  - [2.0, 0.0, 1.5, 0.0]
+  - [2.0, 2.0, 1.5, 1.5708]
+  - [0.0, 2.0, 1.5, 3.1416]
+  - [0.0, 0.0, 1.5, -1.5708]

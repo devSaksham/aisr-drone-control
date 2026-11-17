@@ -106,7 +106,8 @@ def evaluate(df: pd.DataFrame, cfg: Dict[str, Any]) -> Dict[str, Any]:
     """Compute every metric for one run."""
     sc = cfg["scenario"]
     m: Dict[str, Any] = {"scenario": sc["scenario_id"], "method": sc["method"],
-                         "seed": sc["seed"], "duration_s": float(df.time.values[-1])}
+                         "seed": sc["seed"], "tag": sc.get("tag", ""),
+                         "duration_s": float(df.time.values[-1])}
     m.update(crash_info(df))
     airborne = np.maximum.accumulate(df.true_z.values) > 0.3
     m["max_tilt_deg"] = float(tilt_deg(df)[airborne].max()) if airborne.any() else 0.0
@@ -157,7 +158,7 @@ def summarise_runs(run_dirs: Sequence[str], out_csv: str, repo: str = ".") -> pd
         if r is None:
             print(f"  missing telemetry: {d}")
             continue
-        r["run_dir"] = d.replace("\\", "/")
+        r["run_dir"] = os.path.relpath(d, repo if os.path.isabs(d) else ".").replace("\\", "/")
         rows.append(r)
     df = pd.DataFrame(rows)
     os.makedirs(os.path.dirname(out_csv), exist_ok=True)

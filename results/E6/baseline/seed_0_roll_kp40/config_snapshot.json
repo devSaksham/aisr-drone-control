@@ -1,0 +1,86 @@
+{
+  "scenario": {
+    "scenario_id": "E6",
+    "name": "Roll-gain sensitivity on the square mission",
+    "method": "baseline",
+    "seed": 0,
+    "sim_duration_s": 50.0,
+    "output_dir": "results/E6/baseline/seed_0_roll_kp40",
+    "waypoints": [
+      [
+        0.0,
+        0.0,
+        1.5,
+        0.0
+      ],
+      [
+        2.0,
+        0.0,
+        1.5,
+        0.0
+      ],
+      [
+        2.0,
+        2.0,
+        1.5,
+        1.5708
+      ],
+      [
+        0.0,
+        2.0,
+        1.5,
+        3.1416
+      ],
+      [
+        0.0,
+        0.0,
+        1.5,
+        -1.5708
+      ]
+    ],
+    "target_precision_m": 0.2,
+    "switch_times": [],
+    "gps_noise_std": 0.0,
+    "imu_noise_std": 0.0,
+    "wind_force": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "wind_start_s": 0.0,
+    "wind_end_s": 1000000000.0,
+    "gust_amplitude": 0.0,
+    "gust_period_s": 4.0,
+    "gains": {
+      "baseline": {
+        "roll_kp": 40
+      },
+      "improved": {
+        "roll_kp": 40
+      }
+    },
+    "tag": "roll_kp=40"
+  },
+  "gains": {
+    "alt_kp": 12.0,
+    "alt_kd": 8.0,
+    "alt_max": 10.0,
+    "roll_kp": 40.0,
+    "roll_kd": 4.0,
+    "pitch_kp": 30.0,
+    "pitch_kd": 2.5,
+    "att_max": 40.0,
+    "pos_kp": 1.0,
+    "pos_kd": 1.2,
+    "max_tilt": 0.15,
+    "yaw_kp": 0.5,
+    "yaw_max": 1.0,
+    "wp_hold_s": 0.5
+  },
+  "params": {
+    "hover_speed": 68.5,
+    "max_motor_speed": 576.0,
+    "takeoff_alt": 0.3,
+    "kf_accel_psd": 0.1
+  }
+}

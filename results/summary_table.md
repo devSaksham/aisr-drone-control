@@ -1,0 +1,46 @@
+# Results summary (generated)
+
+| scenario | method | seed | tag | success | crashed | path_rmse_m | mission_time_s | max_tilt_deg | control_effort |
+|---|---|---|---|---|---|---|---|---|---|
+| E1 | baseline | 0 | -- | True | False | -- | -- | 2.061 | 51.053 |
+| E1 | improved | 0 | -- | True | False | -- | -- | 0.934 | 20.430 |
+| E2 | baseline | 0 | -- | True | False | 0.063 | 20.760 | 11.820 | 27.091 |
+| E2 | improved | 0 | -- | True | False | 0.049 | 19.232 | 8.196 | 12.107 |
+| E3 | baseline | 0 | -- | True | False | 0.275 | 20.432 | 10.208 | 35.229 |
+| E3 | improved | 0 | -- | True | False | 0.046 | 18.664 | 7.379 | 12.598 |
+| E4 | baseline | 0 | -- | False | False | 0.517 | -- | 13.383 | 24.948 |
+| E4 | improved | 0 | -- | True | False | 0.086 | 20.032 | 11.116 | 11.120 |
+| E5 | baseline | 1 | -- | True | False | 0.069 | 21.024 | 11.879 | 30.925 |
+| E5 | baseline | 10 | -- | True | False | 0.068 | 21.544 | 12.839 | 30.674 |
+| E5 | baseline | 2 | -- | True | False | 0.067 | 21.088 | 11.542 | 30.405 |
+| E5 | baseline | 3 | -- | False | True | 1.185 | -- | 179.887 | 1777.158 |
+| E5 | baseline | 4 | -- | True | False | 0.067 | 21.504 | 11.045 | 31.157 |
+| E5 | baseline | 5 | -- | True | False | 0.067 | 21.584 | 15.460 | 31.448 |
+| E5 | baseline | 6 | -- | False | True | 1.544 | -- | 179.981 | 2070.206 |
+| E5 | baseline | 7 | -- | True | False | 0.068 | 21.600 | 12.503 | 30.846 |
+| E5 | baseline | 8 | -- | True | False | 0.070 | 21.664 | 12.257 | 30.482 |
+| E5 | baseline | 9 | -- | True | False | 0.066 | 21.176 | 13.365 | 30.940 |
+| E5 | improved | 1 | -- | True | False | 0.051 | 19.528 | 9.948 | 18.481 |
+| E5 | improved | 10 | -- | True | False | 0.044 | 19.360 | 9.779 | 18.108 |
+| E5 | improved | 2 | -- | True | False | 0.050 | 19.712 | 10.142 | 17.965 |
+| E5 | improved | 3 | -- | True | False | 0.051 | 19.400 | 9.934 | 19.331 |
+| E5 | improved | 4 | -- | True | False | 0.049 | 19.840 | 9.328 | 18.865 |
+| E5 | improved | 5 | -- | True | False | 0.050 | 19.456 | 9.896 | 18.640 |
+| E5 | improved | 6 | -- | True | False | 0.050 | 19.296 | 9.726 | 18.846 |
+| E5 | improved | 7 | -- | True | False | 0.047 | 19.296 | 9.892 | 18.365 |
+| E5 | improved | 8 | -- | True | False | 0.048 | 19.880 | 9.974 | 18.022 |
+| E5 | improved | 9 | -- | True | False | 0.049 | 19.424 | 9.854 | 18.802 |
+| E6 | baseline | 0 | roll_kp=15 | True | False | 0.066 | 20.840 | 11.537 | 26.943 |
+| E6 | baseline | 0 | roll_kp=20 | True | False | 0.064 | 20.784 | 11.662 | 26.996 |
+| E6 | baseline | 0 | roll_kp=25 | True | False | 0.063 | 20.760 | 11.820 | 27.091 |
+| E6 | baseline | 0 | roll_kp=30 | True | False | 0.063 | 20.752 | 11.976 | 27.295 |
+| E6 | baseline | 0 | roll_kp=35 | True | False | 0.063 | 20.752 | 12.132 | 27.753 |
+| E6 | baseline | 0 | roll_kp=40 | False | True | 0.599 | -- | 179.917 | 1048.882 |
+| E6 | baseline | 0 | roll_kp=50 | False | True | 0.712 | -- | 179.962 | 1391.373 |
+| E6 | improved | 0 | roll_kp=15 | True | False | 0.044 | 19.232 | 8.419 | 12.134 |
+| E6 | improved | 0 | roll_kp=20 | True | False | 0.047 | 19.232 | 8.388 | 12.119 |
+| E6 | improved | 0 | roll_kp=25 | True | False | 0.049 | 19.232 | 8.196 | 12.107 |
+| E6 | improved | 0 | roll_kp=30 | True | False | 0.050 | 19.256 | 7.998 | 12.099 |
+| E6 | improved | 0 | roll_kp=35 | True | False | 0.051 | 19.296 | 7.847 | 12.094 |
+| E6 | improved | 0 | roll_kp=40 | True | False | 0.052 | 19.328 | 7.732 | 12.091 |
+| E6 | improved | 0 | roll_kp=50 | True | False | 0.053 | 19.384 | 7.672 | 12.089 |

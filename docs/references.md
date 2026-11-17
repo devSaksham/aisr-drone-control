@@ -18,7 +18,7 @@ cites them in a different order. Mark anything not yet checked `[VERIFY]`.
 | 9 | R. E. Kalman, "A new approach to linear filtering and prediction problems," *J. Basic Eng.*, vol. 82, no. 1, pp. 35-45, 1960, doi: 10.1115/1.3662552. | Crossref (ASME) | Sec. 5, 6: velocity estimator |
 | 10 | G. M. Hoffmann, H. Huang, S. L. Waslander, and C. J. Tomlin, "Quadrotor helicopter flight dynamics and control: Theory and experiment," in *Proc. AIAA Guid., Navig., Control Conf.*, Hilton Head, SC, USA, 2007. (DOI not confirmed; cite without it.) | scilit, author PDF | Sec. 3: wind and aerodynamic effects |
 | 11 | PX4 Autopilot, "Controller diagrams," PX4 User Guide (v1.17). [Online]. Available: https://docs.px4.io/v1.17/en/flight_stack/controller_diagrams.html | docs.px4.io (page text) | Sec. 3, 4: industry cascaded P/PID architecture with clamping anti-windup |
-| 12 | Cyberbotics, "DJI's Mavic 2 PRO," Webots User Guide. [Online]. Available: https://cyberbotics.com/doc/guide/mavic-2-pro `[VERIFY: open the page and confirm the title]` | indirect only | Sec. 6, 8: robot model |
+| 12 | Cyberbotics, "DJI Mavic 2 Pro model (Mavic2Pro.proto) and sample controllers (mavic2pro_patrol.py)," Webots R2025a source repository. [Online]. Available: https://github.com/cyberbotics/webots/tree/R2025a/projects/robots/dji/mavic | Files read directly from the local R2025a install; our worlds load the PROTO from this path. (The user-guide page renders client-side and could not be checked, so it is not cited.) | Sec. 6, 8: robot model |
 
 ## Notes for the literature review (Section 3)
 - PX4 [11] uses the same structure as our Method B: a position P loop → velocity PID with

@@ -24,6 +24,8 @@ class PhysicalParams:
     hover_speed: float = 68.5      # rad/s, empirical hover rotor speed (sample)
     max_motor_speed: float = 576.0  # rad/s, PROTO maxVelocity
     takeoff_alt: float = 0.3       # m, horizontal loops engage above this height
+    kf_accel_psd: float = 0.1      # Kalman process noise (m^2/s^3); tuned offline on E2
+                                   # data with 5 cm GPS noise (velocity RMSE 0.257 -> 0.074 m/s)
 
 
 @dataclass

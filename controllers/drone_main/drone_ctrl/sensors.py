@@ -10,7 +10,8 @@ The GPS gives position only. Velocity is estimated with a constant-velocity Kalm
 filter per axis (state [p, v]):
     predict:  x = F x,  P = F P F^T + Q,     F = [[1, dt], [0, 1]]
     update:   K = P H^T (H P H^T + R)^-1,    H = [1, 0],  R = sigma_gps^2
-Q comes from white acceleration noise with spectral density q (m^2/s^3).
+Q comes from white acceleration noise with spectral density q (m^2/s^3); q = 0.1 was
+chosen offline (see config.PhysicalParams.kf_accel_psd).
 Plain finite differences of a GPS with 5 cm noise at dt = 8 ms would give velocity
 noise of several m/s; the filter reduces this and also smooths the position.
 """
@@ -71,12 +72,12 @@ class DroneSensors:
     """Reads the Mavic's sensors and returns an estimated DroneState."""
 
     def __init__(self, robot: Any, time_step_ms: int, gps_noise_std: float = 0.0,
-                 imu_noise_std: float = 0.0, seed: int = 0) -> None:
+                 imu_noise_std: float = 0.0, seed: int = 0, accel_psd: float = 0.1) -> None:
         self.dt = time_step_ms / 1000.0
         self.gps_noise_std = gps_noise_std
         self.imu_noise_std = imu_noise_std
         self.rng = np.random.default_rng(seed)
-        self.kf = ConstantVelocityKF(self.dt, gps_noise_std)
+        self.kf = ConstantVelocityKF(self.dt, gps_noise_std, accel_psd)
         self.gps = self.imu = self.gyro = None
         if robot is not None:
             self.gps = robot.getDevice("gps")

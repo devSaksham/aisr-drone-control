@@ -1,0 +1,17 @@
+% Section 1 - written by M1 (Saksham Agrawal)
+\section{Introduction}
+\subsection{Background}
+A quadrotor is a helicopter with four fixed-pitch propellers. It has no swash plate or tail rotor. Every motion is produced by changing the speeds of the four motors, so the vehicle is mechanically simple but has unstable, coupled dynamics: it falls if the controller stops, and tilting it to move sideways also changes the lift that holds it up [1]. For this reason every commercial multirotor, from hobby drones to the DJI Mavic series, runs a feedback controller hundreds of times per second. The common industrial design is a \emph{cascade}: a slow outer loop turns position errors into a desired tilt, and a fast inner loop holds that tilt. The open-source PX4 autopilot, for example, uses a position P loop, a velocity PID loop with integrator anti-windup and an attitude loop below them [2].
+
+Two problems sit at the core of autonomous flight. The first is \emph{altitude control}: holding a commanded height despite battery sag, payload changes and model errors. The second is \emph{waypoint navigation}: flying through a list of 3D points in order, accurately and without violent manoeuvres. Both must also survive wind and sensor noise.
+
+\subsection{Why it matters in industry}
+Waypoint missions are the basic operating mode of drones in surveying, crop spraying, power-line and bridge inspection, warehouse inventory and parcel delivery. In each case the operator plans points on a map and the autopilot flies them. Tracking error translates directly into business cost: a spraying drone that drifts 0.5 m in wind misses rows, and an inspection drone that overshoots a corner can strike the structure. Tuning these controllers on real hardware is slow and risky, so companies first develop and test them in simulation.
+
+\subsection{This project}
+We use the Webots robot simulator [3] and its model of the DJI Mavic 2 Pro [4]. Webots ships a sample controller for this drone. It is a short P/PD design that is easy to read, and it is the natural ``textbook'' starting point. We first measured how the simulated drone actually responds to each control input, then built two complete controllers in Python on top of those verified conventions:
+\begin{itemize}[itemsep=0pt,topsep=2pt]
+\item \textbf{Method A (baseline):} sample-style P/PD loops with step waypoint commands;
+\item \textbf{Method B (improved):} a PID cascade with anti-windup, a minimum-jerk reference trajectory, velocity and acceleration feedforward and thrust tilt compensation.
+\end{itemize}
+Both run on the same simulated drone, the same attitude loop and the same missions. Six experiments (E1--E6) compare them on altitude steps, square and 3D missions, crosswind, sensor noise and gain sensitivity. Every number in this report is produced by scripts in the project repository from logged simulation data.

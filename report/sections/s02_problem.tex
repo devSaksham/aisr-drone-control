@@ -1,0 +1,21 @@
+% Section 2 - written by M1 (Saksham Agrawal)
+\section{Problem Statement and Objectives}
+\subsection{Problem statement}
+Given a simulated DJI Mavic 2 Pro in Webots that starts on the ground, and a list of waypoints $(x_i, y_i, z_i, \psi_i)$ in the world frame, design a controller that reads only the on-board GPS, inertial unit and gyroscope and sets the four propeller speeds so that the drone (a) climbs to and holds commanded altitudes, (b) visits the waypoints in order, and (c) keeps doing so under crosswind and sensor noise. Compare a simple baseline with an improved design using measured, reproducible metrics.
+
+\subsection{Objectives}
+\begin{enumerate}[itemsep=0pt,topsep=2pt]
+\item \textbf{Verified model.} Measure the sign conventions of the simulated drone (axes, motor mixing, attitude response) instead of assuming them.
+\item \textbf{Altitude control.} Track altitude steps with less than 5\,\% overshoot and a steady-state error below 2\,cm (experiment E1).
+\item \textbf{Waypoint navigation.} Complete the square (E2) and 3D (E3) missions with a path RMSE below 0.10\,m and no crash.
+\item \textbf{Robustness.} Complete the square mission under a 0.3\,N crosswind with 0.15\,N gusts (E4) and in at least 9 of 10 runs with GPS and IMU noise (E5).
+\item \textbf{Fair comparison.} Tune both methods, run them under identical conditions and report every metric for both, including where Method B is not better.
+\end{enumerate}
+
+\subsection{Assumptions and limits}
+\begin{itemize}[itemsep=0pt,topsep=2pt]
+\item The simulation is the only ``plant''. Webots models rigid-body dynamics, propeller thrust proportional to the square of rotor speed and linear air damping; it does not model battery sag, motor time constants or ground effect.
+\item GPS gives position only, updated every 8\,ms. Velocity has to be estimated.
+\item Wind is modelled as an external force on the drone's centre of mass, not as an airflow field.
+\item Missions are short (under one minute) and within 3\,m of the start; there are no obstacles.
+\end{itemize}

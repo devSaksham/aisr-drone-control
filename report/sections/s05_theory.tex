@@ -1,0 +1,84 @@
+% Section 5 - written by M3 (Tanvi Singhal)
+\section{Syllabus Mapping and Theory}
+\subsection{Syllabus mapping}
+Table~\ref{tab:syllabus} lists the AISR topics used and where each appears in the project.
+
+\begin{table}[h]
+\centering
+\caption{AISR syllabus topics used in the project}
+\label{tab:syllabus}
+\begin{tabular}{|P{4.4cm}|P{8.4cm}|}
+\hline
+\textbf{Topic} & \textbf{Where it is used} \\ \hline
+Robot dynamics and coordinate frames & Quadrotor thrust and torque model, world/body frames, Euler angles (Sections 5.2--5.3; \texttt{docs/frames.md}) \\ \hline
+Sensors and state estimation & GPS, inertial unit and gyro; Kalman velocity estimator (\texttt{sensors.py}) \\ \hline
+Feedback control (PID) & Altitude, attitude, position and yaw loops; anti-windup, derivative filter (\texttt{pid.py}, \texttt{altitude.py}, \texttt{position.py}) \\ \hline
+Motion and trajectory planning & Waypoint state machine; minimum-jerk trajectory (\texttt{waypoints.py}, \texttt{trajectory.py}) \\ \hline
+Robot simulation & Webots worlds, supervisor disturbances, batch experiments (\texttt{worlds/}, \texttt{wind\_supervisor.py}) \\ \hline
+Performance evaluation & Step-response and tracking metrics, Monte Carlo over seeds, sensitivity sweep (\texttt{metrics.py}) \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Frames and attitude}
+The world frame is East-North-Up: $x$ east, $y$ north, $z$ up, as measured in Webots (Section 6.3). The body frame is fixed to the drone with $x_b$ forward and $z_b$ up. The inertial unit reports roll $\phi$, pitch $\theta$ and yaw $\psi$; the gyro reports the body rates $(p, q, r)$. A vector expressed in the world frame is rotated into the horizontal body frame with
+\begin{equation}
+\begin{bmatrix} e_{x_b} \\ e_{y_b} \end{bmatrix} =
+\begin{bmatrix} \cos\psi & \sin\psi \\ -\sin\psi & \cos\psi \end{bmatrix}
+\begin{bmatrix} e_x \\ e_y \end{bmatrix}.
+\label{eq:rot}
+\end{equation}
+
+\subsection{Quadrotor dynamics}
+Propeller $i$ spinning at $\omega_i$ produces thrust $T_i = k_T\,\omega_i^2$ and a reaction torque $Q_i = k_Q\,\omega_i^2$ [1]. In the Mavic 2 Pro model $k_T = 2.6\times10^{-4}$\,N\,s$^2$ and the rotor speed is limited to 576\,rad/s. With total thrust $T=\sum T_i$ and mass $m$, the translational dynamics are
+\begin{equation}
+m\,\ddot{\mathbf{p}} = R(\phi,\theta,\psi)\begin{bmatrix}0\\0\\T\end{bmatrix} - \begin{bmatrix}0\\0\\mg\end{bmatrix} - c\,\dot{\mathbf{p}} + \mathbf{F}_{w},
+\label{eq:trans}
+\end{equation}
+where $c$ is the air damping and $\mathbf{F}_w$ the wind force. Linearising around hover ($\phi,\theta \approx 0$, $T \approx mg$) gives the relations used by the position loop:
+\begin{equation}
+\ddot{x}_b \approx g\,\theta, \qquad \ddot{y}_b \approx -g\,\phi, \qquad \ddot z \approx \frac{T - mg}{m}.
+\label{eq:lin}
+\end{equation}
+To move forward the drone pitches nose-down ($\theta>0$), and to move left it rolls with $\phi<0$. Both signs were confirmed in simulation (Section 6.3). Because $T \propto \omega^2$, a small change $\delta\omega$ about the hover speed $\omega_h$ changes the thrust by $\delta T/T = 2\,\delta\omega/\omega_h$. So a desired vertical acceleration $a_z$ needs
+\begin{equation}
+\delta\omega = \frac{\omega_h\,a_z}{2g}.
+\label{eq:ff}
+\end{equation}
+This is the acceleration feedforward used by Method B. When the drone is tilted, only $T\cos\phi\cos\theta$ points up, so holding altitude needs the rotor speed scaled by $1/\sqrt{\cos\phi\cos\theta}$.
+
+\subsection{Motor mixing}
+The roll, pitch and yaw commands $u_\phi, u_\theta, u_\psi$ and the vertical command $u_z$ are mixed into the four rotor speeds around $\omega_h$:
+\begin{equation}
+\begin{bmatrix}\omega_{FL}\\ \omega_{FR}\\ \omega_{RL}\\ \omega_{RR}\end{bmatrix} = \omega_h + u_z +
+\begin{bmatrix} -1 & 1 & -1\\ 1 & 1 & 1\\ -1 & -1 & 1\\ 1 & -1 & -1 \end{bmatrix}
+\begin{bmatrix}u_\phi\\ u_\theta\\ u_\psi\end{bmatrix}.
+\label{eq:mix}
+\end{equation}
+The front-right and rear-left propellers spin the opposite way, so their commands are sent with a negative sign.
+
+\subsection{PID control}
+Every loop is a special case of the discrete PID law [11]
+\begin{equation}
+u_k = K_p\,e_k + K_i \sum_{j\le k} e_j\,\Delta t + K_d\,d_k, \qquad d_k = \alpha\, d_{k-1} + (1-\alpha)\,\dot e_k,
+\label{eq:pid}
+\end{equation}
+where $d_k$ is the derivative passed through a first-order low-pass filter with coefficient $\alpha$. When $u_k$ hits its limit, conditional integration stops the sum from growing further in the same direction (anti-windup). For the altitude loop around hover, Eq.~(\ref{eq:lin}) gives a double integrator $Z(s)/U(s) = k/s^2$. A P controller alone leaves this undamped. The D term adds damping, and the I term removes the constant error caused by any mismatch between the assumed and the true hover speed.
+
+\subsection{Minimum-jerk trajectory}
+For a segment of length $D$ and duration $T$ with $\tau = t/T$, the rest-to-rest minimum-jerk profile is [10]
+\begin{equation}
+p(t) = p_0 + (p_1 - p_0)\,(10\tau^3 - 15\tau^4 + 6\tau^5).
+\label{eq:mj}
+\end{equation}
+Its peak speed is $1.875\,D/T$ and its peak acceleration $5.774\,D/T^2$, so $T$ is chosen as the smallest duration that respects the speed and acceleration limits. When the drone hands over from take-off, it is already climbing. The general quintic $p(t) = \sum_{k=0}^5 c_k t^k$ is then solved with the measured start velocity $v_0$ as a boundary condition:
+\begin{equation}
+c_3 = \frac{20D - 12 v_0 T}{2T^3},\quad c_4 = \frac{-30D + 16 v_0 T}{2T^4},\quad c_5 = \frac{12D - 6 v_0 T}{2T^5},
+\end{equation}
+with $c_0 = p_0$, $c_1 = v_0$ and $c_2 = 0$. With $v_0 = 0$ this reduces to Eq.~(\ref{eq:mj}).
+
+\subsection{Kalman velocity estimator}
+For each axis the state $\mathbf{x} = [p, v]^\top$ follows a constant-velocity model with white acceleration noise [12]:
+\begin{equation}
+\mathbf{x}_{k+1} = \begin{bmatrix}1 & \Delta t\\ 0 & 1\end{bmatrix}\mathbf{x}_k + \mathbf{w}_k, \qquad z_k = [1\;\;0]\,\mathbf{x}_k + n_k,
+\end{equation}
+where $n_k$ has the GPS noise variance. The usual predict--update recursion gives a smoothed position and a velocity estimate without differentiating the raw signal.

@@ -36,12 +36,10 @@ Webots R2025a must be installed (default path `C:\Program Files\Webots`).
 | `make slides` | Build the slide deck |
 
 ## Team modules
-| Slot | Module | Files |
-|---|---|---|
-| M1 | State estimation and infrastructure | `drone_ctrl/config.py`, `sensors.py`, `logger.py`, `worlds/` |
-| M2 | Altitude and attitude control | `drone_ctrl/pid.py`, `altitude.py`, `attitude.py`, `mixer.py` |
-| M3 | Navigation and trajectory | `drone_ctrl/position.py`, `yaw.py`, `waypoints.py`, `trajectory.py` |
-| M4 | Integration and disturbance | `drone_main.py`, `drone_ctrl/baseline.py`, `improved.py`, `wind_supervisor/` |
-| M5 | Experiments and analysis | `experiments/`, `analysis/`, `slides/` |
-
-Member names are added once assigned. *TODO*
+| Slot | Member | Module | Files |
+|---|---|---|---|
+| M1 | Saksham Agrawal ([@devSaksham](https://github.com/devSaksham)) | State estimation and infrastructure | `drone_ctrl/config.py`, `sensors.py`, `logger.py`, `worlds/` |
+| M2 | Khushi Gupta ([@khushigupttaa04](https://github.com/khushigupttaa04)) | Altitude and attitude control | `drone_ctrl/pid.py`, `altitude.py`, `attitude.py`, `mixer.py` |
+| M3 | Tanvi | Navigation and trajectory | `drone_ctrl/position.py`, `yaw.py`, `waypoints.py`, `trajectory.py` |
+| M4 | Khyati ([@khyatiyadav06](https://github.com/khyatiyadav06)) | Integration and disturbance | `drone_main.py`, `drone_ctrl/baseline.py`, `improved.py`, `wind_supervisor/` |
+| M5 | Ambrish ([@ambrishchaurasia](https://github.com/ambrishchaurasia)) | Experiments and analysis | `experiments/`, `analysis/`, `slides/` |

@@ -1,0 +1,23 @@
+% Section 12 - written by M5 (Ambrish Chauraiya)
+\section{Conclusion and Future Scope}
+\subsection{Main findings}
+We built and compared two complete altitude and waypoint controllers for the Webots DJI Mavic 2 Pro, on top of sign conventions we measured ourselves.
+\begin{itemize}[itemsep=0pt,topsep=2pt]
+\item Integral action removed the steady altitude error (\R{E1}{baseline}{step2_ss_error_m}\,m $\to$ \R{E1}{improved}{step2_ss_error_m}\,m) and let the drone finish its mission in a crosswind, where the baseline stalled.
+\item A minimum-jerk reference reduced peak tilt and cut control effort by \R{E2}{reduction}{control_effort}\,\% on the square mission, without making the mission slower.
+\item The smooth reference made the system tolerant of the inner-loop gain. The baseline crashed at roll gains \R{E6}{baseline}{failed_gains}; the improved controller never did.
+\item Under GPS and IMU noise, performance depended strongly on the shared Kalman estimator. After retuning it, Method A succeeded in \R{E5}{baseline}{success} runs and Method B in \R{E5}{improved}{success}.
+\end{itemize}
+Against the objectives of Section 2: the sign model was verified; Method B met the altitude targets (overshoot \R{E1}{improved}{step2_overshoot_pct}\,\%, steady-state error \R{E1}{improved}{step2_ss_error_m}\,m) while Method A missed the steady-state target; both methods met the 0.10\,m path target on the square, but only Method B met it on the 3D mission; and only Method B completed the wind mission.
+
+\subsection{Industrial use}
+The improved structure is the one used by open-source autopilots [2], and our results show what each of its parts contributes. It applies directly to waypoint missions in inspection, surveying, crop spraying and delivery, where path error and gust rejection decide whether a mission is usable. The crash-aware batch test bench is a pattern that can be reused to regression-test controller changes before flight.
+
+\subsection{Moving to a real drone}
+\begin{itemize}[itemsep=0pt,topsep=2pt]
+\item \textbf{Actuators:} add motor time constants and thrust saturation from battery voltage; re-tune the attitude loop on a test stand.
+\item \textbf{Estimation:} fuse GPS with accelerometers in an extended Kalman filter (as PX4's EKF2 does [2]), and handle GPS dropouts and lower update rates.
+\item \textbf{Timing:} run the loops at fixed rates on the flight computer and test with realistic latency.
+\item \textbf{Safety:} geofencing, a failsafe landing and a tilt limit enforced independently of the controller.
+\item \textbf{Control:} compare against LQR or model-predictive control on the linearised model [5], [7].
+\end{itemize}

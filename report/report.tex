@@ -1,0 +1,145 @@
+% Project report built on the official AISR Overleaf template (main.tex).
+% Preamble, title page, border, fonts, margins, Index and page numbering are kept
+% exactly as in the template; only the content changes.
+% Build:  make report   (pdflatex twice, from this folder)
+% The logo upes_logo.png comes from AISR_Sample_Project_Report_Overleaf.zip (kept local).
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage[left=3cm,right=2.5cm,top=2.5cm,bottom=2.5cm,footskip=0.75cm]{geometry}
+\usepackage{graphicx,calc}
+\usepackage{setspace,eso-pic,tikz,array,booktabs,longtable,enumitem,caption,titlesec,fancyhdr,tocloft}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc}
+\usepackage{amsmath,float,algorithm,algpseudocode}
+\usepackage[hidelinks]{hyperref}
+\onehalfspacing
+\setlength{\parindent}{0pt}\setlength{\parskip}{6pt}
+
+% single-line page border on every page (title page included)
+\AddToShipoutPictureBG{%
+  \AtPageLowerLeft{\put(\LenToUnit{1.5cm},\LenToUnit{1.5cm}){%
+    \framebox(\LenToUnit{\paperwidth-3cm},\LenToUnit{\paperheight-3cm}){}}}}
+\setlength{\fboxrule}{0.8pt}
+
+\titleformat{\section}{\fontsize{14}{17}\bfseries}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+\captionsetup{font=small,labelfont=bf}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}}
+\pagestyle{plain}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\contentsname}{Index}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\note}[1]{\textit{[#1]}}
+\graphicspath{{../results/figures/}}
+
+% every result number comes from results/summary.csv through these macros
+\input{generated/results_macros.tex}
+% page counts per member for the Writing Allocation table (generated after a build)
+\providecommand{\pagesMone}{--}\providecommand{\pagesMtwo}{--}\providecommand{\pagesMthree}{--}
+\providecommand{\pagesMfour}{--}\providecommand{\pagesMfive}{--}
+\InputIfFileExists{generated/pages.tex}{}{}
+\newcommand{\SAP}{\rule{2.6cm}{0.4pt}}  % SAP IDs are written in by each member
+
+\begin{document}
+% ------------------------------------------------------------------ TITLE PAGE (common format)
+\begin{titlepage}
+\centering
+\vspace*{-0.8cm}
+\includegraphics[width=0.46\linewidth]{upes_logo.png}\\[0.4cm]
+{\large\bfseries School of Computer Science, UPES, Dehradun}\\[0.8cm]
+{\large A Project Report on}\\[0.5cm]
+{\fontsize{19}{24}\selectfont\bfseries Quadrotor Drone Altitude and Waypoint\\[2pt] Control in Webots\par}
+\vspace{0.7cm}
+{\normalsize Submitted for the course}\\[4pt]
+{\large\bfseries CSAI4014 Algorithms for Intelligent Systems and Robotics}\\[4pt]
+B.Tech CSE (AI \& ML), Semester VII\\[0.6cm]
+\begin{tabular}{ll}
+\textbf{Project No.:} & P10 \\
+\textbf{Group No.:} & G13 \\
+\textbf{Batch:} & B1-B2 \\
+\end{tabular}\\[0.5cm]
+{\bfseries Submitted by}\\[4pt]
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|c|P{6.2cm}|c|}
+\hline
+\textbf{S. No.} & \textbf{Name} & \textbf{SAP ID} \\ \hline
+1 & Saksham Agrawal & \SAP \\ \hline
+2 & Khushi Gupta & \SAP \\ \hline
+3 & Tanvi Singhal & \SAP \\ \hline
+4 & Khyati Yadav & \SAP \\ \hline
+5 & Ambrish Chauraiya & \SAP \\ \hline
+\end{tabular}\\[0.6cm]
+{\bfseries Submitted to}\\[2pt]
+Course Faculty, CSAI4014\\
+School of Computer Science, UPES, Dehradun\\[0.6cm]
+{\bfseries Academic Year 2026-2027 \quad | \quad November 2026}
+\end{titlepage}
+
+% ------------------------------------------------------------------ FRONT PAGES (Roman numbers)
+\pagenumbering{roman}\setcounter{page}{1}
+\section*{Declaration}
+\addcontentsline{toc}{section}{Declaration}
+We declare that this project report titled ``Quadrotor Drone Altitude and Waypoint Control in Webots'' is our own work, carried out for the course CSAI4014 Algorithms for Intelligent Systems and Robotics. The code, results and text are original, and all sources used are cited in the References.
+
+\vspace{1cm}
+\renewcommand{\arraystretch}{2.2}
+\begin{tabular}{|P{5.2cm}|P{3cm}|P{4.5cm}|}
+\hline
+\textbf{Name} & \textbf{SAP ID} & \textbf{Signature} \\ \hline
+Saksham Agrawal & & \\ \hline
+Khushi Gupta & & \\ \hline
+Tanvi Singhal & & \\ \hline
+Khyati Yadav & & \\ \hline
+Ambrish Chauraiya & & \\ \hline
+\end{tabular}
+\renewcommand{\arraystretch}{1.2}
+
+\vspace{0.8cm}
+Date: \rule{4cm}{0.4pt} \hfill Place: Dehradun
+\newpage
+
+\input{sections/abstract}
+\newpage
+
+\tableofcontents
+\newpage
+\listoffigures
+\addcontentsline{toc}{section}{List of Figures}
+\listoftables
+\addcontentsline{toc}{section}{List of Tables}
+\newpage
+
+\section*{Writing Allocation}
+\addcontentsline{toc}{section}{Writing Allocation}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{|c|P{4.6cm}|P{5.4cm}|c|}
+\hline
+\textbf{Member} & \textbf{Name and SAP ID} & \textbf{Sections written} & \textbf{Pages} \\ \hline
+M1 & Saksham Agrawal (\SAP) & Abstract, 1, 2, 13 (References) & \pagesMone \\ \hline
+M2 & Khushi Gupta (\SAP) & 3, 4 (Novelty), 9.4--9.6 & \pagesMtwo \\ \hline
+M3 & Tanvi Singhal (\SAP) & 5, 6 & \pagesMthree \\ \hline
+M4 & Khyati Yadav (\SAP) & 7, 8 & \pagesMfour \\ \hline
+M5 & Ambrish Chauraiya (\SAP) & 9.1--9.3, 12, Appendix & \pagesMfive \\ \hline
+All & Every member & 10 (own row), 11 (own reflection), Declaration & -- \\ \hline
+\end{tabular}
+\renewcommand{\arraystretch}{1.2}
+\newpage
+
+% ------------------------------------------------------------------ MAIN TEXT (Arabic numbers)
+\pagenumbering{arabic}\setcounter{page}{1}
+\input{sections/s01_introduction}
+\input{sections/s02_problem}
+\input{sections/s03_literature}
+\input{sections/s04_novelty}
+\input{sections/s05_theory}
+\input{sections/s06_design}
+\input{sections/s07_methodology}
+\input{sections/s08_setup}
+\input{sections/s09_results}
+\input{sections/s10_contribution}
+\input{sections/s11_reflection}
+\input{sections/s12_conclusion}
+\input{sections/s13_references}
+\input{sections/appendix}
+\end{document}

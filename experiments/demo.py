@@ -22,6 +22,7 @@ import argparse
 import copy
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -88,8 +89,13 @@ def main() -> None:
     tele = os.path.join(REPO, out_rel, "telemetry.csv")
     if os.path.exists(tele):
         os.remove(tele)
+    # Open a throwaway copy of the world: if someone presses Save in the Webots GUI,
+    # only the copy is overwritten and the experiment worlds stay clean.
+    src = os.path.join(REPO, sc["world"])
+    world = os.path.join(os.path.dirname(src), "_demo_" + os.path.basename(src))
+    shutil.copyfile(src, world)
     mode = "--mode=fast" if a.fast else "--mode=realtime"
-    proc = subprocess.Popen([WEBOTS_EXE, mode, os.path.join(REPO, sc["world"])], cwd=REPO)
+    proc = subprocess.Popen([WEBOTS_EXE, mode, world], cwd=REPO)
 
     # When the run ends the controller writes its telemetry; print the result then.
     while not os.path.exists(tele) and proc.poll() is None:

@@ -47,3 +47,11 @@ worlds/.*.wbproj
 Thumbs.db
 .vscode/
 .idea/
+
+# Faculty template assets (local only)
+report/template/
+report/upes_logo.png
+
+# throwaway world copies opened by experiments/demo.py
+worlds/_demo_*.wbt
+worlds/._demo_*.wbproj

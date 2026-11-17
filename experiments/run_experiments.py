@@ -95,6 +95,7 @@ def main() -> None:
     ap.add_argument("--only", nargs="*", help="scenario ids, e.g. E1 E2")
     ap.add_argument("--methods", nargs="*", default=list(METHODS))
     ap.add_argument("--no-summary", action="store_true")
+    ap.add_argument("--resume", action="store_true", help="skip runs that already have telemetry")
     args = ap.parse_args()
 
     for sc in load_scenarios(args.only):
@@ -103,7 +104,10 @@ def main() -> None:
         for variant, tag in sweep_variants(sc):
             for seed in variant.get("seeds", [0]):
                 for method in args.methods:
-                    run_single(variant, method, seed, run_dir(sc["scenario_id"], method, seed, tag))
+                    out_rel = run_dir(sc["scenario_id"], method, seed, tag)
+                    if args.resume and os.path.exists(os.path.join(REPO, out_rel, "telemetry.csv")):
+                        continue
+                    run_single(variant, method, seed, out_rel)
     if not args.no_summary:
         write_summary()
 

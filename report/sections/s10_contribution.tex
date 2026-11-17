@@ -1,0 +1,20 @@
+% Section 10 - every member writes and signs their own row
+\section{Contribution}
+Table~\ref{tab:contrib} lists the technical contribution of each member. Every item can be traced to the member's commits in the GitHub repository (Appendix) and to their part of the demonstration video.
+
+\renewcommand{\arraystretch}{1.4}
+\begin{longtable}{|c|P{2.9cm}|P{6.9cm}|P{2.5cm}|}
+\caption{Technical contribution of each member}\label{tab:contrib}\\
+\hline
+\textbf{S. No.} & \textbf{Name and SAP ID} & \textbf{Technical contribution (modules / algorithms / code files / experiments)} & \textbf{Sections + signature} \\ \hline
+\endfirsthead
+\hline
+\textbf{S. No.} & \textbf{Name and SAP ID} & \textbf{Technical contribution} & \textbf{Sections + signature} \\ \hline
+\endhead
+1 & Saksham Agrawal (\SAP) & State estimation and infrastructure (M1): sign-convention probe in Webots (\texttt{sign\_probe.py}, \texttt{probe.wbt}, \texttt{analyse\_probe.py}) and the verified frames document (\texttt{docs/frames.md}, Fig.~\ref{fig:probe}); constant-velocity Kalman velocity estimator and noise injection (\texttt{sensors.py}); scenario/gain configuration (\texttt{config.py}); telemetry logger (\texttt{logger.py}); the three worlds; repository setup; verified reference list. & Abstract, 1, 2, 13 \\ \hline
+2 & Khushi Gupta (\SAP) & Altitude and attitude control (M2): PID with conditional anti-windup and filtered derivative (\texttt{pid.py}); Method A PD and Method B PID altitude loops with acceleration feedforward and tilt compensation (\texttt{altitude.py}); attitude PD with the verified sign (\texttt{attitude.py}); motor mixer (\texttt{mixer.py}); altitude and roll-gain tuning (E1, E6); unit tests for these files. & 3, 4, 9.4--9.6 \\ \hline
+3 & Tanvi Singhal (\SAP) & Navigation and trajectory (M3): Method A PD and Method B position-velocity cascade with body-frame rotation (\texttt{position.py}); yaw controller with angle wrapping (\texttt{yaw.py}); waypoint state machine with timed mode (\texttt{waypoints.py}); quintic minimum-jerk trajectory with non-zero start velocity (\texttt{trajectory.py}); unit tests for these files. & 5, 6 \\ \hline
+4 & Khyati Yadav (\SAP) & Integration and disturbance (M4): Method A and Method B assemblies including the take-off hand-off (\texttt{baseline.py}, \texttt{improved.py}); controller entry point (\texttt{drone\_main.py}); wind/gust supervisor with crash watchdog, waypoint markers and status labels (\texttt{wind\_supervisor.py}); live demo launcher with custom target points (\texttt{demo.py}); E4 wind experiment. & 7, 8 \\ \hline
+5 & Ambrish Chauraiya (\SAP) & Experiments and analysis (M5): batch runner and E1--E6 scenario files (\texttt{run\_experiments.py}); tuning harness and tuning log (\texttt{tune.py}); crash-aware metrics (\texttt{metrics.py}); all result figures and tables (\texttt{plots.py}, \texttt{tables.py}, Figs.~\ref{fig:e1}--\ref{fig:e6}, Tables~\ref{tab:e1}--\ref{tab:e6}); E5 Monte Carlo study. & 9.1--9.3, 12, Appendix \\ \hline
+\end{longtable}
+\renewcommand{\arraystretch}{1.2}

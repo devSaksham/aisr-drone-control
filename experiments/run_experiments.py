@@ -50,9 +50,25 @@ def run_dir(scenario_id: str, method: str, seed: int, tag: str = "") -> str:
     return os.path.join("results", scenario_id, method, name)
 
 
+def check_world(world_rel: str) -> None:
+    """Refuse to run on a world that a Webots GUI 'Save' has overwritten.
+
+    Saving in the Webots GUI writes the current simulation state into the .wbt file
+    (fields marked `hidden`, a mid-air drone pose, nodes added by the supervisor).
+    Experiments started from such a file are invalid, so stop with a clear message.
+    """
+    with open(os.path.join(REPO, world_rel), "r", encoding="utf-8") as f:
+        text = f.read()
+    drone = text[text.find("DEF DRONE"):]
+    if "hidden " in text or "translation 0 0 0.1" not in drone[:200]:
+        raise SystemExit(f"{world_rel} contains saved simulation state (was it saved from the "
+                         f"Webots GUI?). Restore it with: git checkout -- {world_rel}")
+
+
 def run_single(scenario: Dict[str, Any], method: str, seed: int, out_rel: str,
                timeout_s: float = 300.0) -> Dict[str, Any]:
     """Run one Webots simulation and return its run description."""
+    check_world(scenario["world"])
     run = copy.deepcopy(scenario)
     run.update({"method": method, "seed": seed, "output_dir": out_rel.replace("\\", "/")})
     run.pop("seeds", None)

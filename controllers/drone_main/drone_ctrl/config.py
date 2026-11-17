@@ -95,6 +95,7 @@ class ScenarioConfig:
     gust_amplitude: float = 0.0         # N, sinusoidal gust added on the wind direction
     gust_period_s: float = 4.0
     gains: Dict[str, Dict[str, float]] = field(default_factory=dict)
+    tag: str = ""                       # label of a sweep variant, e.g. "roll_kp=25"
 
 
 def apply_overrides(gains: Any, overrides: Dict[str, float]) -> Any:

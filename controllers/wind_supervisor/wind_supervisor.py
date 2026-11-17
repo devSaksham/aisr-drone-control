@@ -3,7 +3,8 @@
 Module: wind_supervisor.py
 Owner: M4
 Inputs:  scenario from current_scenario.json (wind_force, gust settings, duration).
-Outputs: external force on the DRONE node every step; optional screenshots;
+Outputs: external force on the DRONE node every step; waypoint markers and an
+         on-screen status line for demos; optional screenshots;
          simulationQuit() at the end of the run or after a crash.
 
 Wind model (world frame, applied at the drone's centre of mass with addForce):
@@ -53,12 +54,44 @@ def wind_at(t: float, cfg: dict) -> list:
     return force
 
 
+MARKER = ('Pose {{ translation {x} {y} {z} children [ Shape {{ appearance PBRAppearance {{ '
+          'baseColor {c} roughness 1 metalness 0 transparency 0.3 }} geometry Sphere {{ '
+          'radius 0.07 subdivision 2 }} }} ] }}')
+LABEL_COLOR = 0xFFFFFF
+METHOD_NAMES = {"baseline": "Method A (baseline P/PD, step waypoints)",
+                "improved": "Method B (PID + min-jerk trajectory)"}
+
+
+def draw_waypoints(sup: Supervisor, waypoints: list) -> None:
+    """Add a small sphere at each waypoint (green = first, red = others) for the demo view."""
+    children = sup.getRoot().getField("children")
+    for i, wp in enumerate(waypoints):
+        colour = "0.1 0.8 0.2" if i == 0 else "0.9 0.2 0.2"
+        children.importMFNodeFromString(-1, MARKER.format(x=wp[0], y=wp[1], z=wp[2], c=colour))
+
+
+def show_status(sup: Supervisor, cfg: dict, t: float, drone, force: list) -> None:
+    """Three on-screen text lines: what is flying, where it is, which waypoint/wind."""
+    name = METHOD_NAMES.get(cfg.get("method", ""), cfg.get("method", ""))
+    sup.setLabel(0, f"{cfg.get('scenario_id', '')}: {cfg.get('name', '')}  |  {name}",
+                 0.01, 0.01, 0.07, LABEL_COLOR, 0.0, "Arial")
+    if drone is None:
+        return
+    x, y, z = drone.getPosition()
+    progress = drone.getField("customData").getSFString() or "-"
+    sup.setLabel(1, f"t = {t:5.1f} s   position x={x:+.2f}  y={y:+.2f}  z={z:.2f} m   "
+                    f"waypoint {progress}", 0.01, 0.05, 0.07, LABEL_COLOR, 0.0, "Arial")
+    wind = f"wind force = ({force[0]:+.1f}, {force[1]:+.1f}) N" if any(force) else "no wind"
+    sup.setLabel(2, wind, 0.01, 0.09, 0.07, LABEL_COLOR, 0.0, "Arial")
+
+
 def main() -> None:
     sup = Supervisor()
     step_ms = int(sup.getBasicTimeStep())
     cfg = load_cfg()
     duration = float(cfg.get("sim_duration_s", 30.0))
     drone = sup.getFromDef("DRONE")
+    draw_waypoints(sup, cfg.get("waypoints", []))
     shot_dir = os.path.join(REPO_ROOT, cfg.get("output_dir", "results/demo"), "screenshots")
     shots = list(SCREENSHOT_TIMES) if cfg.get("screenshots") else []
     crashed_for = 0.0
@@ -68,6 +101,7 @@ def main() -> None:
         force = wind_at(t, cfg)
         if drone is not None and any(force):
             drone.addForce(force, False)
+        show_status(sup, cfg, t, drone, force)
         if drone is not None:
             body_z_up = drone.getOrientation()[8]  # R[2][2]: cos of tilt
             crashed_for = crashed_for + step_ms / 1000.0 if body_z_up < CRASH_COS_TILT else 0.0

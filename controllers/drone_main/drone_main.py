@@ -71,6 +71,9 @@ def main() -> None:
             for m, w in zip(motors, out.motors):
                 m.setVelocity(w)
             logger.log(t, state, sensors.gps.getValues(), out)
+            # Progress shown on screen by the supervisor (Robot.customData field).
+            n_wp = len(scenario.waypoints)
+            robot.setCustomData("done" if out.finished else f"{out.wp_index + 1}/{n_wp}")
             if t >= scenario.sim_duration_s:
                 break
     finally:

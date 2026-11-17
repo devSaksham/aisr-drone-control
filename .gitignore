@@ -55,3 +55,8 @@ report/upes_logo.png
 # throwaway world copies opened by experiments/demo.py
 worlds/_demo_*.wbt
 worlds/._demo_*.wbproj
+
+# scratch run output (tuning trials, demo runs); kept out of the repo
+results/tuning/
+results/demo/
+results/batch_log*.txt

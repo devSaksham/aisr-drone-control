@@ -52,7 +52,7 @@ def main() -> None:
     params = PhysicalParams()
     controller, gains = build_controller(scenario, params)
     sensors = DroneSensors(robot, step_ms, scenario.gps_noise_std, scenario.imu_noise_std,
-                           scenario.seed)
+                           scenario.seed, params.kf_accel_psd)
     out_dir = os.path.join(REPO_ROOT, scenario.output_dir)
     logger = TelemetryLogger(out_dir)
 

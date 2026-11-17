@@ -18,11 +18,11 @@ WorldInfo {
   }
 }
 Viewpoint {
-  orientation -0.2 0.2 0.95 2.7
-  position 6.0 -3.0 5.0
+  orientation -0.1930 0.1930 0.9620 1.6095
+  position 1 -4.5 3.5
   near 0.2
   follow "Mavic 2 PRO"
-  followSmoothness 0.2
+  followType "Pan and Tilt Shot"
 }
 TexturedBackground {
   luminosity 3
@@ -39,13 +39,7 @@ DEF DRONE Mavic2Pro {
   translation 0 0 0.1
   rotation 0 0 1 0
   controller "drone_main"
-  cameraSlot [
-    Camera {
-      width 400
-      height 240
-      near 0.2
-    }
-  ]
+  cameraSlot []
 }
 Robot {
   name "supervisor"

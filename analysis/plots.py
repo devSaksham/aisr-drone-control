@@ -118,10 +118,10 @@ def fig_wind() -> None:
         err = cross_track(d[["true_x", "true_y", "true_z"]].values, wps)
         ax.plot(d.time, err, color=STYLE[m]["color"], ls=STYLE[m]["ls"], label=STYLE[m]["label"])
     ax.axvspan(8.0, d.time.max(), color=GRID, alpha=0.5, lw=0)
-    ax.annotate("wind on (0.3 N + 0.15 N gusts)", xy=(8.3, 0.92), xycoords=("data", "axes fraction"),
-                color=MUTED, fontsize=8)
+    ax.annotate("wind on from t = 8 s (0.3 N + 0.15 N gusts)", xy=(8.3, 1.02),
+                xycoords=("data", "axes fraction"), color=MUTED, fontsize=8)
     ax.set(xlabel="Time (s)", ylabel="Distance from path (m)")
-    ax.legend(loc="upper right")
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.22), ncol=2, fontsize=8)
     save(fig, "fig_e4_wind_error.png")
 
 
@@ -130,7 +130,7 @@ def fig_tilt() -> None:
     for m in STYLE:
         d = tele("E2", m)
         ax.plot(d.time, tilt_deg(d), color=STYLE[m]["color"], ls=STYLE[m]["ls"], label=STYLE[m]["label"], lw=1.2)
-    ax.set(xlabel="Time (s)", ylabel="Tilt (deg)", xlim=(0, 30))
+    ax.set(xlabel="Time (s)", ylabel="Tilt (deg)", xlim=(3, 30))  # airborne from about 3 s
     ax.legend(loc="upper right")
     save(fig, "fig_e2_tilt.png")
 
@@ -140,18 +140,25 @@ def fig_noise(summary: pd.DataFrame) -> None:
     if s.empty:
         return
     fig, ax = plt.subplots(figsize=(4.8, 3.2))
-    data = [s[s.method == m].path_rmse_m.dropna().values for m in STYLE]
-    bp = ax.boxplot(data, widths=0.45, patch_artist=True, medianprops={"color": INK})
+    ok = {m: s[(s.method == m) & s.success.astype(bool)] for m in STYLE}
+    bp = ax.boxplot([ok[m].path_rmse_m.values for m in STYLE], widths=0.45, patch_artist=True,
+                    showfliers=False, medianprops={"color": INK})
     for patch, m in zip(bp["boxes"], STYLE):
-        patch.set(facecolor=STYLE[m]["color"], alpha=0.35, edgecolor=STYLE[m]["color"])
+        patch.set(facecolor=STYLE[m]["color"], alpha=0.3, edgecolor=STYLE[m]["color"])
     for i, m in enumerate(STYLE, 1):
-        sm = s[s.method == m]
-        ax.scatter(np.full(len(sm), i) + np.linspace(-0.08, 0.08, len(sm)), sm.path_rmse_m,
-                   s=14, color=STYLE[m]["color"], zorder=3)
-        ax.annotate(f"success {int(sm.success.sum())}/{len(sm)}", (i, ax.get_ylim()[1]),
-                    ha="center", va="top", color=INK, fontsize=8)
+        sm = ok[m]
+        ax.scatter(np.full(len(sm), i) + np.linspace(-0.1, 0.1, len(sm)), sm.path_rmse_m,
+                   s=16, color=STYLE[m]["color"], zorder=3)
+        allm = s[s.method == m]
+        crashed = allm[allm.crashed.astype(bool)].seed.astype(int).tolist()
+        note = f"success {len(sm)}/{len(allm)}"
+        if crashed:
+            note += "\ncrashed: seed " + ", ".join(map(str, sorted(crashed)))
+        ax.annotate(note, (i, 1.0), xycoords=("data", "axes fraction"), ha="center", va="top",
+                    color=INK, fontsize=8)
     ax.set_xticks([1, 2], [STYLE[m]["label"] for m in STYLE])
-    ax.set_ylabel("Path RMSE over 10 seeds (m)")
+    ax.set_ylabel("Path RMSE, successful runs (m)")
+    ax.margins(y=0.35)
     save(fig, "fig_e5_noise_box.png")
 
 
@@ -160,21 +167,25 @@ def fig_sweep(summary: pd.DataFrame) -> None:
     if s.empty:
         return
     s["kp"] = s.tag.str.split("=").str[1].astype(float)
-    fig, ax = plt.subplots(figsize=(6.0, 3.0))
+    fig, ax = plt.subplots(figsize=(6.0, 3.2))
+    failed = []
     for m in STYLE:
         sm = s[s.method == m].sort_values("kp")
         ok = sm[sm.success.astype(bool)]
-        bad = sm[~sm.success.astype(bool)]
-        ax.plot(ok.kp, ok.path_rmse_m, color=STYLE[m]["color"], ls=STYLE[m]["ls"], marker="o", ms=5,
-                label=STYLE[m]["label"])
-        if len(bad):
-            ax.scatter(bad.kp, np.zeros(len(bad)) + ax.get_ylim()[0], marker="x", s=50,
-                       color=STYLE[m]["color"], label=f"{STYLE[m]['label']}: failed")
+        ax.plot(ok.kp, ok.path_rmse_m, color=STYLE[m]["color"], ls=STYLE[m]["ls"], marker="o",
+                ms=5, label=STYLE[m]["label"])
+        failed += [(m, k) for k in sm[~sm.success.astype(bool)].kp]
+    ax.margins(y=0.3)
+    top = ax.get_ylim()[1]
+    for m, k in failed:  # crashed runs have no meaningful RMSE: mark them along the top edge
+        ax.scatter([k], [top], marker="x", s=60, color=STYLE[m]["color"], clip_on=False, zorder=4)
+        ax.annotate("crashed", (k, top), textcoords="offset points", xytext=(0, -14),
+                    ha="center", color=STYLE[m]["color"], fontsize=8)
     ax.axvline(50, color=MUTED, lw=0.8, ls=":")
-    ax.annotate("Webots sample value", xy=(49.5, 0.95), xycoords=("data", "axes fraction"),
-                ha="right", color=MUTED, fontsize=8)
-    ax.set(xlabel="Roll proportional gain $K_{p,\\phi}$", ylabel="E2 path RMSE (m)")
-    ax.legend(fontsize=8, loc="upper left")
+    ax.annotate("Webots sample", xy=(49.3, 0.5), xycoords=("data", "axes fraction"), ha="right",
+                rotation=90, va="center", color=MUTED, fontsize=8)
+    ax.set(xlabel=r"Roll proportional gain $K_{p,\phi}$", ylabel="E2 path RMSE (m)")
+    ax.legend(fontsize=8, loc="upper center", bbox_to_anchor=(0.5, -0.22), ncol=2)
     save(fig, "fig_e6_roll_gain_sweep.png")
 
 

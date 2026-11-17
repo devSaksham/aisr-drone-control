@@ -1,0 +1,32 @@
+% Section 3 - written by M2 (Khushi Gupta)
+\section{Literature and Industry Review}
+\subsection{Quadrotor modelling and control}
+Mahony, Kumar and Corke give the standard rigid-body model of a quadrotor and explain why it is almost always controlled as a cascade of attitude and position loops [1]. Bouabdallah, Noth and Siegwart compared a classical PID controller, designed on a simplified model, with an LQ controller designed on a fuller model, on a real indoor micro quadrotor [5]. They found that both could stabilise attitude, and that the simple PID was the more practical in the presence of model uncertainty. Hoffmann et al. showed experimentally that aerodynamic effects which are negligible in hover (blade flapping, the effect of forward speed and angle of attack) matter at higher speeds and in gusts [6]. Lee, Leok and McClamroch proposed a geometric controller on SE(3) that avoids the singularities of Euler angles and can perform aggressive manoeuvres [7]. It is more powerful than PID but needs an accurate model and a torque-level interface, which the Webots sample setup does not expose.
+
+\subsection{Trajectory generation}
+A controller that receives a waypoint as a step input sees a large sudden error and responds with an aggressive tilt. Trajectory generation replaces the step with a smooth time-parametrised path. Mellinger and Kumar showed that quadrotors are differentially flat and generated piecewise polynomial trajectories that minimise snap (the fourth derivative of position) [8]. Mueller, Hehn and D'Andrea derived closed-form motion primitives that can be generated and checked a million times per second [9]. The minimum-\emph{jerk} profile, a fifth-order polynomial, was first used by Flash and Hogan to model smooth human arm movements [10]. It is the lowest-order polynomial that matches position, velocity and acceleration at both ends of a segment, which is exactly what point-to-point waypoint flight needs.
+
+\subsection{PID design and state estimation}
+\AA str\"om and H\"agglund cover the practical issues of PID control that matter here: integrator windup when the actuator saturates, filtering of the derivative term, and feedforward [11]. Velocity is not measured by GPS, and differentiating a noisy position signal amplifies the noise. The standard remedy is a Kalman filter [12], which combines a motion model with the measurements.
+
+\subsection{Industry practice}
+PX4 runs a position P loop that commands a velocity, a velocity PID loop with clamping anti-windup that commands an acceleration, and an attitude loop below [2]. Webots provides a calibrated model of the DJI Mavic 2 Pro and a short Python sample controller with P/PD attitude and altitude loops [3], [4].
+
+Table~\ref{tab:lit} summarises the approaches.
+
+\begin{table}[h]
+\centering
+\caption{Comparison of existing approaches}
+\label{tab:lit}
+\begin{tabular}{|P{3.6cm}|P{4.6cm}|P{4.6cm}|}
+\hline
+\textbf{Approach} & \textbf{Strength} & \textbf{Limitation} \\ \hline
+P/PD with step setpoints (Webots sample) [4] & Simple; few gains & Steady-state error; aggressive response to steps \\ \hline
+PID cascade (PX4) [2], [5] & Industry standard; integral removes bias & Many gains to tune; windup if not handled \\ \hline
+LQ / geometric control [5], [7] & Optimal or global stability & Needs an accurate model and torque inputs \\ \hline
+Min-snap / motion primitives [8], [9] & Smooth, fast, dynamically feasible paths & Optimisation over whole paths; more complex \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{What is missing}
+The sample controller has never been checked against the simulated drone's real responses at larger tilt angles. Its fixed gains are presented without any analysis. We found no published, reproducible comparison inside Webots of the sample-style controller against an industry-style PID cascade with trajectory generation, measured under the same wind, noise and gain variations. This project fills that gap at the scale of a course project.

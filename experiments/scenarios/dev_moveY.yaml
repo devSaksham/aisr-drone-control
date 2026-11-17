@@ -1,0 +1,12 @@
+# development scenario (axis isolation); skipped by the full batch
+dev: true
+scenario_id: DEVY
+name: dev single 1 m move along Y
+world: worlds/square.wbt
+sim_duration_s: 16.0
+target_precision_m: 0.2
+seeds: [0]
+switch_times: [0.0, 7.0]
+waypoints:
+  - [0.0, 0.0, 1.5, 0.0]
+  - [0.0, 1.0, 1.5, 0.0]

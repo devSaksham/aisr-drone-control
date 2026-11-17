@@ -1,0 +1,11 @@
+scenario_id: E1
+name: Altitude step response
+world: worlds/hover.wbt
+sim_duration_s: 30.0
+target_precision_m: 0.15
+seeds: [0]
+# timed steps: take off to 2.0 m at t=0, step down to 1.0 m at t=15 s
+switch_times: [0.0, 15.0]
+waypoints:
+  - [0.0, 0.0, 2.0, 0.0]
+  - [0.0, 0.0, 1.0, 0.0]

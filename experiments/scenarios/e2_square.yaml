@@ -1,0 +1,13 @@
+scenario_id: E2
+name: Square waypoint mission at fixed altitude
+world: worlds/square.wbt
+sim_duration_s: 50.0
+target_precision_m: 0.2
+seeds: [0]
+# 2 m x 2 m square at 1.5 m; the nose turns to face each new leg
+waypoints:
+  - [0.0, 0.0, 1.5, 0.0]
+  - [2.0, 0.0, 1.5, 0.0]
+  - [2.0, 2.0, 1.5, 1.5708]
+  - [0.0, 2.0, 1.5, 3.1416]
+  - [0.0, 0.0, 1.5, -1.5708]

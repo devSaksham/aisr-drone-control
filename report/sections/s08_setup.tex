@@ -1,0 +1,38 @@
+% Section 8 - written by M4 (Khyati Yadav)
+\section{Simulation Setup}
+\subsection{Platform}
+Webots R2025a [3] with the DJI Mavic 2 Pro model [4]; controllers in Python 3.13 with NumPy, pandas, Matplotlib, PyYAML and pytest; experiments run headless with \texttt{webots --mode=fast --batch --no-rendering}. A supervisor robot (\texttt{wind\_supervisor.py}) applies the wind force with \texttt{addForce}, ends a run early if the drone tilts beyond 60$^\circ$ for one second, and draws the waypoints and a status line in demonstration runs.
+
+\subsection{Experiments}
+Table~\ref{tab:scen} defines the six experiments. Both methods run every experiment under identical conditions, from the same YAML file in \texttt{experiments/scenarios/}.
+
+\begin{table}[h]
+\centering
+\caption{Experiment scenarios}
+\label{tab:scen}
+\begin{tabular}{|c|P{5.6cm}|P{6.6cm}|}
+\hline
+\textbf{ID} & \textbf{Scenario} & \textbf{Measures} \\ \hline
+E1 & Take-off to 2.0\,m at $t=0$; step to 1.0\,m at $t=15$\,s (timed) & Rise time, overshoot, settling time, steady-state error \\ \hline
+E2 & 2\,m $\times$ 2\,m square at 1.5\,m, nose turned along each leg & Path RMSE, max error, mission time, tilt, effort \\ \hline
+E3 & Five 3D waypoints, altitude 1.0--2.5\,m & As E2 \\ \hline
+E4 & E2 with 0.3\,N crosswind along $+y$ and 0.15\,N gusts (period 4\,s) from $t=8$\,s & Waypoints reached, path error \\ \hline
+E5 & E2 with GPS noise $\sigma = 5$\,cm and IMU noise $\sigma = 0.005$\,rad, seeds 1--10 & Success rate, path RMSE mean $\pm$ std \\ \hline
+E6 & E2 with roll gain $K_{p\phi} \in \{15, 20, 25, 30, 35, 40, 50\}$ & Success and RMSE vs gain \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Metrics}
+All position metrics use the true GPS position, before any injected noise. A run counts as \emph{crashed} if the tilt exceeds 60$^\circ$ or the drone falls below 0.15\,m after having flown above 0.5\,m. It is a \emph{success} if it did not crash and reached every waypoint. Path RMSE is the root-mean-square distance from the drone to the straight-line path through the waypoints, from the first waypoint until the mission ends. Control effort is the time-average of $\sum_i(\omega_i - \omega_h)^2$. Step metrics follow the usual definitions [11], with a $\pm2\,\%$ settling band.
+
+\subsection{How to run}
+\begin{verbatim}
+pip install -r requirements.txt
+make test                              # 56 unit tests
+python experiments/run_experiments.py   # all runs
+python analysis/plots.py               # figures
+python analysis/tables.py              # tables, numbers
+make report                            # this PDF
+python experiments/demo.py E2 improved # live demo
+python experiments/demo.py --points "0,0,1.5 2,1,2 0,0,1" baseline
+\end{verbatim}

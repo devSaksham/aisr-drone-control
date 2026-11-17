@@ -1,0 +1,100 @@
+% Section 7 - written by M4 (Khyati Yadav)
+\section{Methodology and Algorithms}
+\subsection{Main control loop}
+Every 8\,ms the drone controller (1) reads the GPS, inertial unit and gyro, adding Gaussian noise when the scenario asks for it; (2) updates the Kalman filter; (3) calls the selected controller; (4) sends the four rotor speeds; and (5) logs the step. Figure~\ref{fig:flow} shows the flow, including the waypoint switching rule.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=0.42cm, box/.style={draw, thick, rounded corners, minimum width=5.2cm, minimum height=0.7cm, align=center, font=\footnotesize}, dec/.style={draw, thick, diamond, aspect=2.6, align=center, font=\footnotesize, inner sep=1pt}, >={Stealth}]
+\node[box] (a) {Read GPS, IMU, gyro (+ noise)};
+\node[box, below=of a] (b) {Kalman filter: position and velocity};
+\node[dec, below=of b] (c) {Within 0.2\,m of waypoint\\for 0.5\,s?};
+\node[box, below=of c] (d) {Reference: waypoint (A) or trajectory (B)};
+\node[box, below=of d] (e) {Altitude, position, attitude, yaw loops};
+\node[box, below=of e] (f) {Mixer $\rightarrow$ 4 rotor speeds; log step};
+\node[box, right=0.9cm of c, minimum width=2.6cm] (g) {Next waypoint\\(B: new segment)};
+\draw[->, thick] (a) -- (b);
+\draw[->, thick] (b) -- (c);
+\draw[->, thick] (c) -- node[left, font=\scriptsize]{no} (d);
+\draw[->, thick] (c) -- node[above, font=\scriptsize]{yes} (g);
+\draw[->, thick] (g) |- (d);
+\draw[->, thick] (d) -- (e);
+\draw[->, thick] (e) -- (f);
+\draw[->, thick] (f.west) -- ++(-0.6,0) |- node[left, pos=0.25, font=\scriptsize]{every 8 ms} (a.west);
+\end{tikzpicture}
+\caption{Flowchart of one control step and the waypoint switching rule}
+\label{fig:flow}
+\end{figure}
+
+\subsection{Method A: baseline P/PD}
+Method A is a faithful, cleaned-up version of the Webots sample. The next waypoint is applied as a step. The altitude loop is PD around the hover speed, the position loop is PD, and the yaw loop is P (Algorithm~\ref{alg:a}). It has no integral term and no feedforward.
+
+\begin{algorithm}[h]
+\caption{Method A step (baseline)}
+\label{alg:a}
+\begin{algorithmic}[1]
+\State $w \gets$ current waypoint; advance if reached
+\State $u_z \gets K_{pz}(z_w - z) - K_{dz}\,v_z$ \Comment{PD altitude}
+\If{$z > 0.3$\,m} \Comment{horizontal loops only once airborne}
+\State $\mathbf a \gets K_p(\mathbf p_w - \mathbf p) - K_d\,\mathbf v$ \Comment{PD position, world frame}
+\State $(\phi_r, \theta_r) \gets$ tilt from $\mathbf a$ via Eq.~(\ref{eq:rot}), clamped to $\pm 0.15$\,rad
+\State $u_\psi \gets K_{p\psi}\,\mathrm{wrap}(\psi_w - \psi)$
+\EndIf
+\State $u_\phi \gets K_{p\phi}(\phi - \phi_r) + K_{d\phi}\,p$; \quad $u_\theta \gets K_{p\theta}(\theta - \theta_r) + K_{d\theta}\,q$
+\State send $\mathrm{mix}(u_z, u_\phi, u_\theta, u_\psi)$ \Comment{Eq.~(\ref{eq:mix})}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Method B: improved trajectory-tracking PID}
+Method B keeps the same attitude loop and mixer, so the comparison isolates four changes (Algorithm~\ref{alg:b}):
+\begin{enumerate}[itemsep=0pt,topsep=2pt]
+\item \textbf{Take-off hand-off.} While on the ground the rotors spool up with a fixed boost. Once the drone is airborne, the first minimum-jerk segment starts from its measured position \emph{and velocity}, so the reference never tells a climbing drone to stop.
+\item \textbf{Minimum-jerk reference.} Each waypoint change starts a segment limited to 1.2\,m/s and 1.0\,m/s$^2$. The next waypoint is accepted only once the segment has finished and the drone is within tolerance.
+\item \textbf{Altitude PID.} PID with conditional anti-windup, filtered derivative ($\alpha = 0.5$), velocity feedforward, acceleration feedforward (Eq.~\ref{eq:ff}) and tilt compensation.
+\item \textbf{Position cascade.} Position P $\rightarrow$ velocity command (limited to 1.5\,m/s) $\rightarrow$ velocity PI with anti-windup $\rightarrow$ acceleration, plus the trajectory's velocity and acceleration as feedforward. The yaw loop is PD.
+\end{enumerate}
+
+\begin{algorithm}[h]
+\caption{Method B step (improved)}
+\label{alg:b}
+\begin{algorithmic}[1]
+\If{not airborne and no segment planned}
+\State send $\mathrm{mix}(u_{boost}, \text{attitude hold}, 0)$; \textbf{return}
+\EndIf
+\State on first call: plan segment from $(\mathbf p, \psi)$ with start velocity $\mathbf v$
+\State advance waypoint only if segment finished and waypoint reached; then plan next segment
+\State $(\mathbf p_r, \mathbf v_r, \mathbf a_r) \gets$ trajectory$(t)$
+\State $u_z \gets \mathrm{PID}(z_r - z,\; v_{z,r} - v_z) + \omega_h a_{z,r}/(2g)$; \; $u_z \gets (\omega_h + u_z)/\sqrt{\cos\phi\cos\theta} - \omega_h$
+\State $\mathbf v_c \gets \mathbf v_r + K_{pp}(\mathbf p_r - \mathbf p)$, $|\mathbf v_c| \le 1.5$
+\State $\mathbf a \gets \mathbf a_r + \mathrm{PI}(\mathbf v_c - \mathbf v)$ \Comment{anti-windup}
+\State $(\phi_r, \theta_r) \gets$ tilt from $\mathbf a$; $u_\psi \gets K_{p\psi}\mathrm{wrap}(\psi_r - \psi) - K_{d\psi} r$
+\State attitude PD and mixer as in Method A
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Controller tuning}
+Tuning was done in simulation with \texttt{experiments/tune.py}, which runs one scenario with a set of gain overrides and appends the result to a tuning log. Every trial is kept, including those that crashed. The procedure was:
+\begin{enumerate}[itemsep=0pt,topsep=2pt]
+\item \textbf{Altitude (E1).} Method B's altitude PID gains were raised from $K_p = 4$ to 16 until the step-down undershoot stopped falling. At $K_p = 12$ and above the drone crashed at take-off. This led to two fixes: the velocity-matched take-off hand-off, and the acceleration feedforward, which cut the undershoot from about 8\,\% to 3\,\%. Method A was swept separately. Its best stable setting was $K_p = 12$, $K_d = 8$; at $K_p = 16$ the step command saturated the motors and the drone crashed.
+\item \textbf{Attitude (E2 and single-axis tests).} With the sample's roll gain ($K_{p\phi} = 50$) Method A crashed on every square mission. Separate 1\,m moves along $x$ and $y$ isolated the cause to the roll axis. A roll gain of 25 with rate gain 4 is stable, and both methods use it.
+\item \textbf{Tilt limit.} With the new roll gains, Method A completed the square up to a tilt limit of 0.15\,rad and crashed at 0.20\,rad. Both methods therefore use 0.15\,rad. Method B flew the square without trouble at peak tilts up to 21$^\circ$ in a separate test with an aggressive (but smooth) trajectory.
+\item \textbf{Trajectory speed.} Method B's speed and acceleration limits were swept (0.8--1.5\,m/s). 1.2\,m/s and 1.0\,m/s$^2$ gave the best trade-off between path error and mission time.
+\item \textbf{Estimator (E5).} With the first Kalman setting (process noise $q = 4$\,m$^2$/s$^3$), every noisy run of \emph{both} methods crashed before the first waypoint. The velocity estimate had about 0.26\,m/s of noise, and the altitude derivative gain turned this into thrust jitter, which the off-centre thrust coupled into pitch. Replaying the clean E2 trajectory with added 5\,cm noise offline showed that $q = 0.1$ cuts the velocity error to 0.074\,m/s, while the error without noise changes by only 2\,mm/s. All experiments were then re-run with $q = 0.1$.
+\end{enumerate}
+Table~\ref{tab:gains} lists the final gains.
+
+\begin{table}[h]
+\centering
+\caption{Final controller parameters (from \texttt{config.py})}
+\label{tab:gains}
+\begin{tabular}{|P{5.6cm}|P{3.4cm}|P{3.8cm}|}
+\hline
+\textbf{Parameter} & \textbf{Method A} & \textbf{Method B} \\ \hline
+Altitude $K_p$, $K_i$, $K_d$ & 12, --, 8 & 16, 4, 10 \\ \hline
+Roll $K_p$, $K_d$ / pitch $K_p$, $K_d$ & 25, 4 / 30, 2.5 & 25, 4 / 30, 2.5 \\ \hline
+Position & PD: $K_p = 1.0$, $K_d = 1.2$ & P 1.2 $\rightarrow$ PI 2.0, 0.5 \\ \hline
+Yaw & P: 0.5 & PD: 0.8, 0.3 \\ \hline
+Tilt limit / speed limit & 0.15 rad / -- & 0.15 rad / 1.5 m/s \\ \hline
+Trajectory limits & -- (steps) & 1.2 m/s, 1.0 m/s$^2$ \\ \hline
+\end{tabular}
+\end{table}

@@ -28,6 +28,7 @@ INK, MUTED, ACCENT = RGBColor(0x1F, 0x1F, 0x1E), RGBColor(0x6B, 0x6B, 0x66), RGB
 BLUE = RGBColor(0x2A, 0x78, 0xD6)
 W, H = Emu(12192000), Emu(6858000)  # 16:9
 
+SAP = {"M1": "500121969", "M2": "500119129", "M3": "500126859", "M4": "500123608", "M5": "500120274"}
 MEMBERS = {"M1": "Saksham Agrawal", "M2": "Khushi Gupta", "M3": "Tanvi Singhal",
            "M4": "Khyati Yadav", "M5": "Ambrish Chauraiya", "All": "All members"}
 
@@ -161,7 +162,7 @@ def build() -> Presentation:
              ["CSAI4014 Algorithms for Intelligent Systems and Robotics",
               "Project No. P10  |  Group No. G13  |  Batch B1-B2"], size=22, align=PP_ALIGN.CENTER)
     add_text(s, 1800000, 3700000, 8600000, 2200000,
-             [f"{MEMBERS[m]}  (SAP: ____________)" for m in ("M1", "M2", "M3", "M4", "M5")],
+             [f"{MEMBERS[m]}  (SAP: {SAP[m]})" for m in ("M1", "M2", "M3", "M4", "M5")],
              size=20, align=PP_ALIGN.CENTER)
     add_text(s, 600000, 5900000, 11000000, 450000, "Course Faculty, CSAI4014  |  School of Computer Science, UPES",
              size=18, color=MUTED, align=PP_ALIGN.CENTER)

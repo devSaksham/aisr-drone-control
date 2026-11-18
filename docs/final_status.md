@@ -9,7 +9,7 @@
       Index, List of Figures, List of Tables, Writing Allocation, Sections 1-13 incl. Novelty (4)
       and Contribution (10), 12 verified IEEE references, all cited in order.
 - [x] Slides: 17, presenter name on each, own figures (`slides/slides.pdf`).
-- [x] Video screenplay with timings (`docs/video_script.md`) and viva Q&A (`docs/viva_qa.md`).
+- [x] Video screenplay with timings and viva Q&A (local only, not in the repo).
 
 ## The team must still do (cannot and must not be done for you)
 - [ ] Write SAP IDs on the title page, Declaration, Writing Allocation and Contribution table, and the slide title.

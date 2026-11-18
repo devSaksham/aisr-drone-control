@@ -60,3 +60,8 @@ worlds/._demo_*.wbproj
 results/tuning/
 results/demo/
 results/batch_log*.txt
+
+# Kept local only (not on GitHub)
+docs/viva_qa.md
+docs/video_script.md
+docs/video_script.template.md

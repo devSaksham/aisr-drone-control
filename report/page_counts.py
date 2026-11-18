@@ -22,9 +22,6 @@ OWNERS = {  # section titles as they appear in the Index -> member slot
     "Methodology and Algorithms": "Mfour", "Simulation Setup": "Mfour",
     "Results and Analysis": "Mfive", "Conclusion and Future Scope": "Mfive",
     "Appendix: Links and Logs": "Mfive",
-    # Section 9 is split between two writers (subsection titles)
-    "E4: crosswind": "Mtwo", "E5: sensor noise": "Mtwo", "E6: roll-gain sensitivity": "Mtwo",
-    "What worked and what did not": "Mtwo",
 }
 
 

@@ -39,7 +39,7 @@ Figure~\ref{fig:block} shows the full system. Sensor readings are turned into a 
 \end{figure}
 
 \subsection{Robot and environment}
-The robot is the Webots model of the DJI Mavic 2 Pro [4], an X-configuration quadrotor. Its main body has a mass of 0.4\,kg with the centre of mass at $x = -0.088$\,m. The front propellers are at $x = +0.055$\,m and the rear ones at $x = -0.177$\,m, so the rotors are not centred on the centre of mass. The worlds (\texttt{hover.wbt}, \texttt{square.wbt}, \texttt{wind.wbt}) contain a flat 100\,m $\times$ 100\,m floor, the drone starting at $(0, 0, 0.1)$\,m with yaw 0, and a supervisor robot. The physics time step is 8\,ms, and the air damping is 0.5 (linear and angular), as required by the Webots sample controller.
+The robot is the Webots model of the DJI Mavic 2 Pro [4], an X-configuration quadrotor. In the model file (\texttt{Mavic2Pro.proto}, [4]) the main body has a mass of 0.4\,kg with the centre of mass at $x = -0.088$\,m; we read these values from the file and did not set them ourselves. The front propellers are at $x = +0.055$\,m and the rear ones at $x = -0.177$\,m, so the rotors are not centred on the centre of mass. The worlds (\texttt{hover.wbt}, \texttt{square.wbt}, \texttt{wind.wbt}) contain a flat 100\,m $\times$ 100\,m floor, the drone starting at $(0, 0, 0.1)$\,m with yaw 0, and a supervisor robot. The physics time step is 8\,ms, and the air damping is 0.5 (linear and angular), as required by the Webots sample controller.
 
 Table~\ref{tab:hw} lists the devices used.
 

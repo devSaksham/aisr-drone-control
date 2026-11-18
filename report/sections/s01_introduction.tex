@@ -14,4 +14,4 @@ We use the Webots robot simulator [3] and its model of the DJI Mavic 2 Pro [4]. 
 \item \textbf{Method A (baseline):} sample-style P/PD loops with step waypoint commands;
 \item \textbf{Method B (improved):} a PID cascade with anti-windup, a minimum-jerk reference trajectory, velocity and acceleration feedforward and thrust tilt compensation.
 \end{itemize}
-Both run on the same simulated drone, the same attitude loop and the same missions. Six experiments (E1--E6) compare them on altitude steps, square and 3D missions, crosswind, sensor noise and gain sensitivity. Every number in this report is produced by scripts in the project repository from logged simulation data.
+Both run on the same simulated drone, the same attitude loop and the same missions. Six experiments (E1--E6) compare them on altitude steps, square and 3D missions, crosswind, sensor noise and gain sensitivity. Every result in Section 9 is produced by scripts in the project repository from logged simulation data; the tuning figures in Section 7.4 come from the tuning log (\texttt{docs/tuning\_log.md}) and an offline replay.

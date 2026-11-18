@@ -19,7 +19,6 @@
 - [ ] Each member fills a peer-assessment sheet individually (`docs/peer_assessment.md`).
 - [ ] Confirm the AISR syllabus topic names in Table 2 against your course syllabus.
 - [x] Video recorded and uploaded (https://youtu.be/450zcQy80m8); link is in the Appendix and on slide 17.
-- [ ] Add a contact e-mail on slide 17.
 - [ ] Print and bind the report (single-sided); team lead submits the Google Form by the deadline.
 - [ ] Khushi, Khyati and Tanvi accept the GitHub collaborator invitations.
 - [ ] Make sure the repository is visible to the evaluator (it is currently public).

@@ -64,6 +64,7 @@ def main() -> None:
     ap.add_argument("--points", help='your own targets, e.g. "0,0,1.5 2,1,2 0,0,1"')
     ap.add_argument("--wind", type=float, default=0.0, help="crosswind in N (with --points)")
     ap.add_argument("--fast", action="store_true", help="run faster than real time")
+    ap.add_argument("--record", help="save an mp4 of the run to this path")
     a = ap.parse_args()
 
     method = a.args[-1]
@@ -79,6 +80,8 @@ def main() -> None:
         sc.pop("sweep", None)
     out_rel = f"results/demo/{sc['scenario_id']}_{method}"
     sc.update({"method": method, "seed": 0, "screenshots": True, "output_dir": out_rel})
+    if a.record:
+        sc["record"] = os.path.abspath(a.record)
     with open(os.path.join(REPO, "current_scenario.json"), "w", encoding="utf-8") as f:
         json.dump(sc, f, indent=2)
 

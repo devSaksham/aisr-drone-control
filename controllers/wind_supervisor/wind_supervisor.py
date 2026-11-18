@@ -95,6 +95,9 @@ def main() -> None:
     shot_dir = os.path.join(REPO_ROOT, cfg.get("output_dir", "results/demo"), "screenshots")
     shots = list(SCREENSHOT_TIMES) if cfg.get("screenshots") else []
     crashed_for = 0.0
+    movie = cfg.get("record")
+    if movie:
+        sup.movieStartRecording(movie, 1280, 720, 0, 90, 1, False)
 
     while sup.step(step_ms) != -1:
         t = sup.getTime()
@@ -108,6 +111,11 @@ def main() -> None:
         if shots and t >= shots[0]:
             os.makedirs(shot_dir, exist_ok=True)
             sup.exportImage(os.path.join(shot_dir, f"t{shots.pop(0):04.1f}s.png"), 90)
+        if movie and (crashed_for >= CRASH_HOLD_S or t >= duration):
+            sup.movieStopRecording()
+            while not sup.movieIsReady():
+                sup.step(0)
+            movie = None
         if crashed_for >= CRASH_HOLD_S:
             print(f"[wind_supervisor] drone crashed at t={t:.2f}s, ending run")
             sup.simulationQuit(0)

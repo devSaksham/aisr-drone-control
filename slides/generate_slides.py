@@ -315,7 +315,7 @@ def build() -> Presentation:
              align=PP_ALIGN.CENTER)
     add_text(s, 600000, 3200000, 11000000, 1800000,
              ["GitHub: github.com/devSaksham/aisr-drone-control",
-              "Contact: ______________________"], size=22, align=PP_ALIGN.CENTER)
+              "Video: https://youtu.be/450zcQy80m8", "Contact: ______________________"], size=22, align=PP_ALIGN.CENTER)
     add_text(s, 8200000, 6300000, 3800000, 450000, "Presenter: All members", size=14, color=MUTED,
              align=PP_ALIGN.RIGHT)
     return prs

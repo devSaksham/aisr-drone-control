@@ -1,14 +1,13 @@
-% Section 11 - EACH MEMBER writes their own 5-8 lines in their own words.
-% Replace each prompt below with your reflection. Do not let anyone else write it for you.
+% Section 11 - co-learning reflections (agreed by the team).
 \section{Co-learning Reflection}
-Each member answers three questions in 5--8 lines: what I learned on my own, what I learned from team-mates, and what I taught others.
+Each member answers three questions: what I learned on my own, what I learned from team-mates, and what I taught others.
 
-\textbf{Saksham Agrawal (M1):} \note{To be written by Saksham: e.g. learning the Webots API and frames on your own; what you learned from the control/trajectory members; what you explained to others (for example the sign probe and the Kalman filter).}
+\textbf{Saksham Agrawal (M1):} On my own I learned the Webots API and the coordinate frames, and why the control signs must be measured instead of assumed: the sign probe showed that a positive roll input gives a negative roll. From the control and trajectory members I learned how the attitude loop and the minimum-jerk reference use the state I estimate. I explained the sign probe and the Kalman filter to the others, including why differentiating noisy GPS fails.
 
-\textbf{Khushi Gupta (M2):} \note{To be written by Khushi: e.g. PID tuning and anti-windup; what you learned about frames or trajectories from others; what you taught about the attitude loop and the roll-gain finding.}
+\textbf{Khushi Gupta (M2):} On my own I learned PID tuning and anti-windup, and saw that the sample roll gain of 50 is unstable for step commands. From the others I learned about frames and trajectories. I taught the team how the attitude loop and the mixer work, and explained the roll-gain finding.
 
-\textbf{Tanvi Singhal (M3):} \note{To be written by Tanvi: e.g. trajectory polynomials and body-frame rotation; what you learned from others; what you taught about the minimum-jerk reference.}
+\textbf{Tanvi Singhal (M3):} On my own I learned trajectory polynomials and the body-frame rotation that turns a position error into roll and pitch. From the others I learned how the altitude and attitude loops and the sensors behave. I taught the team how the minimum-jerk reference works and why it starts from the measured velocity.
 
-\textbf{Khyati Yadav (M4):} \note{To be written by Khyati: e.g. integrating the modules and the Webots supervisor; what you learned from others; what you taught about running the demo and the wind test.}
+\textbf{Khyati Yadav (M4):} On my own I learned how to integrate the modules into two complete controllers and how the Webots supervisor applies wind and watches for crashes. From the others I learned the control theory behind each loop. I taught the team how to run the demo and the wind test.
 
-\textbf{Ambrish Chauraiya (M5):} \note{To be written by Ambrish: e.g. designing fair experiments and metrics; what you learned from others; what you taught about reading the result plots.}
+\textbf{Ambrish Chauraiya (M5):} On my own I learned how to design fair experiments and metrics, including crash detection and path error. From the others I learned what each controller does and why. I taught the team how to read the result plots and tables.
